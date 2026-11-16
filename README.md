@@ -287,13 +287,13 @@ No separate vector database, embeddings framework, LangChain, or frontend framew
 
 ## AI-assisted development
 
-AI coding assistants were used to write the **majority of the application's code**, including much of the CLI, retrieval and RAG service implementation, Gemini integration, schemas, tests, and documentation.
+AI coding assistants were used to write most of the code, including much of the CLI, retrieval and RAG service implementation, Gemini integration, schemas, tests, and documentation.
 
 My main contribution was deciding what the application should look like architecturally and specifying that design in a detailed implementation prompt. I defined the intended CLI-first workflow, local knowledge-base retrieval, Gemini-powered grounded response generation, structured JSON output, source citations, and the supporting technology choices before the implementation was generated.
 
-After that, my hands-on coding involvement was mainly in running the project, identifying errors during installation and testing, and correcting those issues with AI assistance. I tested the working application with real Gemini requests and iterated on problems such as Windows dependency installation and Gemini's structured-output schema compatibility.
+After that, my hands-on coding involvement was mainly in running the project, identifying errors during installation and testing, and correcting those issues. I tested the working application with real Gemini requests and iterated on problems such as Windows dependency installation and Gemini's structured-output schema compatibility.
 
-In other words, AI coding assistants produced most of the implementation; I directed the architecture and requirements, then focused on troubleshooting and validating the result.
+In other words, AI coding assistants produced most of the actual code; I directed the architecture and requirements, then focused on troubleshooting and validating the result.
 
 ## Configuration
 
@@ -387,7 +387,3 @@ Check the model ID, network connection, key, and quota. The app intentionally hi
 - BM25 is lexical retrieval; it can miss synonyms and paraphrases.
 - No appointment booking, live insurance verification, or patient-record integration is included.
 - Google Gemini API usage is subject to Google's terms, privacy practices, model availability, and rate limits.
-
-## License
-
-No license has been added to this repository. Unless a license is added by the repository owner, assume the code is not granted for redistribution or reuse beyond the rights allowed by applicable law.
