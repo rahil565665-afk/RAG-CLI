@@ -32,6 +32,7 @@ def test_unknown_question_abstains_without_calling_gemini():
     assert result.answerable is False
     assert result.sources == []
     assert result.confidence_score == 0.0
+    assert "confidence_basis" not in result.model_dump()
     assert fake.calls == 0
 
 
@@ -44,6 +45,7 @@ def test_only_retrieved_citations_are_returned():
     service = RAGService(kb, retriever, fake, min_relevance=0.12, top_k=4)
     result = service.answer("How much does a routine cleaning cost?")
     assert result.answerable is True
+    assert "confidence_basis" not in result.model_dump()
     assert [source.chunk_id for source in result.sources] == [allowed]
     assert result.sources[0].source_pages == [6]
     assert 0.0 <= result.confidence_score <= 1.0
