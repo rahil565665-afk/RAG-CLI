@@ -24,6 +24,7 @@ def test_api_returns_abstention_for_unknown_query():
     body = response.json()
     assert body["answerable"] is False
     assert body["sources"] == []
+    assert "confidence_basis" not in body
 
 
 def test_api_returns_safe_configuration_error_without_key(monkeypatch):
