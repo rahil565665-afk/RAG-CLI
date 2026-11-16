@@ -39,22 +39,46 @@ py --version
 git --version
 ```
 
-### 2. Download the project
+### 2. Choose a writable folder, then download the project
 
-Run:
+**Important for Windows users:** PowerShell may open in `C:\Windows\System32` (you can see this after `PS` in the prompt). This is a protected Windows system folder. Do not clone projects there. Git will usually report `could not create work tree dir ... Permission denied`.
+
+The commands below work even when PowerShell starts in `C:\Windows\System32`. They create a `Projects` folder inside your own Windows user profile and move into it before cloning:
 
 ```powershell
+$projectRoot = Join-Path $HOME "Projects"
+New-Item -ItemType Directory -Force -Path $projectRoot | Out-Null
+Set-Location $projectRoot
 git clone https://github.com/rahil565665-afk/RAG-CLI.git
-cd RAG-CLI
+Set-Location .\RAG-CLI
 ```
 
-After changing directory, verify that the project files are present:
+Your project will be located at:
+
+```text
+C:\Users\<your-Windows-username>\Projects\RAG-CLI
+```
+
+You can use a different writable location, such as Downloads, by changing the first command to:
 
 ```powershell
+$projectRoot = Join-Path $HOME "Downloads"
+```
+
+After cloning, verify that PowerShell is inside the repository and that the project files are present:
+
+```powershell
+Get-Location
 Get-ChildItem
 ```
 
-You should see `requirements.txt`, `.env.example`, the `app` folder, and the `data` folder.
+You should see `requirements.txt`, `.env.example`, the `app` folder, and the `data` folder. Continue with step 3 only after these files are visible.
+
+**If you see “destination path 'RAG-CLI' already exists”:** the repository may already have been cloned. Move into the existing folder instead of cloning it again:
+
+```powershell
+Set-Location (Join-Path $HOME "Projects\RAG-CLI")
+```
 
 ### 3. Create a virtual environment
 
@@ -255,6 +279,20 @@ You do not need to activate the virtual environment. Use the explicit interprete
 ```
 
 This avoids running `Activate.ps1` and avoids changing your machine's execution policy.
+
+### Git says `could not create work tree dir 'RAG-CLI': Permission denied`
+
+This usually means PowerShell is currently in a protected folder such as `C:\Windows\System32`. It is not a Python or Git installation problem. Do not run PowerShell as Administrator and do not change Windows folder permissions. Instead, clone the project into a folder you own:
+
+```powershell
+$projectRoot = Join-Path $HOME "Projects"
+New-Item -ItemType Directory -Force -Path $projectRoot | Out-Null
+Set-Location $projectRoot
+git clone https://github.com/rahil565665-afk/RAG-CLI.git
+Set-Location .\RAG-CLI
+```
+
+If cloning already failed, no repository folder was created in the protected location; run the commands above. If the project has already been cloned under another folder, use `Set-Location` with that full folder path rather than cloning it again.
 
 ### `requirements.txt` cannot be found
 
