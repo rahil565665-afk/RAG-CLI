@@ -143,7 +143,6 @@ A successful response is JSON shaped like this (wording and scores vary):
     }
   ],
   "confidence_score": 0.46,
-  "confidence_basis": "Retrieval-based relevance heuristic (BM25-normalized score); not a calibrated probability.",
   "answerable": true
 }
 ```
@@ -256,6 +255,46 @@ RAG-CLI/
 └── README.md
 ```
 
+
+## Architecture and design decisions
+
+The project uses a deliberately small, CLI-first RAG architecture:
+
+1. **Local knowledge source:** the fictional clinic handbook is represented as a JSON file containing 31 topic-based chunks. Each chunk carries its own stable ID, section information, source page, keywords, and content.
+2. **Local retrieval before generation:** a BM25 keyword retriever ranks the chunks on the user's machine. The project does not require a hosted vector database, embedding service, or separate retrieval server.
+3. **Relevance gate and top-k selection:** only the highest-ranked chunks that meet the configured minimum relevance threshold are sent to the model. The number of chunks is limited to five.
+4. **Grounded answer generation:** the application sends the question and selected evidence to Google Gemini. The model is instructed to answer from those passages only and to abstain when the supplied evidence is insufficient.
+5. **Structured response validation:** Pydantic validates the model's small response schema. The application then maps cited chunk IDs back to the original local records and builds the source citations itself, rather than trusting the model to invent section or page metadata.
+6. **Safety-first deterministic handling:** a narrow emergency-phrase rule runs before a Gemini call. It is only a limited backstop, not a diagnostic system or a replacement for local emergency services.
+7. **Two ways to use the same service:** the command-line interface is the primary user interface. FastAPI exposes the same RAG service through a small optional local HTTP API.
+
+These decisions keep the demo understandable, inexpensive to run, and straightforward for a new developer to inspect. The lexical BM25 approach is intentionally transparent, although it can miss synonyms and paraphrases.
+
+## Libraries and frameworks used
+
+| Library / tool | How it is used |
+|---|---|
+| Python standard library | CLI argument handling, JSON processing, file paths, tokenization, BM25 scoring, and regular-expression safety checks |
+| `google-genai` | Calls the Gemini Developer API and requests structured JSON output |
+| Pydantic | Defines and validates the model draft and application response schemas |
+| `python-dotenv` | Loads the developer's local `.env` configuration without hard-coding API keys |
+| FastAPI | Provides the optional HTTP API on top of the same RAG service |
+| Uvicorn | Runs the optional FastAPI application locally |
+| pytest | Runs automated tests for retrieval, service behavior, API behavior, and Gemini schema compatibility |
+| HTTPX | Supports FastAPI endpoint tests through its test client |
+
+No separate vector database, embeddings framework, LangChain, or frontend framework is required by the current implementation.
+
+## AI-assisted development
+
+AI coding assistants were used to write the **majority of the application's code**, including much of the CLI, retrieval and RAG service implementation, Gemini integration, schemas, tests, and documentation.
+
+My main contribution was deciding what the application should look like architecturally and specifying that design in a detailed implementation prompt. I defined the intended CLI-first workflow, local knowledge-base retrieval, Gemini-powered grounded response generation, structured JSON output, source citations, and the supporting technology choices before the implementation was generated.
+
+After that, my hands-on coding involvement was mainly in running the project, identifying errors during installation and testing, and correcting those issues with AI assistance. I tested the working application with real Gemini requests and iterated on problems such as Windows dependency installation and Gemini's structured-output schema compatibility.
+
+In other words, AI coding assistants produced most of the implementation; I directed the architecture and requirements, then focused on troubleshooting and validating the result.
+
 ## Configuration
 
 | Setting | Default | Purpose |
@@ -337,14 +376,6 @@ Check the model ID, network connection, key, and quota. The app intentionally hi
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 ```
-
-## How confidence and citations work
-
-- `sources` contains only passages retrieved from the local knowledge base and cited by the model.
-- Each source includes the chunk ID, section code/title, subsection, source document, source page(s), and retrieval relevance.
-- `confidence_score` is the highest relevance score among the valid cited passages.
-- This score is a BM25-normalized retrieval heuristic, **not** a probability that the answer is correct, not clinical certainty, and not a medical risk score.
-- If relevant evidence is not retrieved, the app abstains rather than asking Gemini to invent an answer.
 
 ## Safety and limitations
 
