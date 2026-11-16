@@ -171,7 +171,7 @@ Tests do not call Gemini and do not require an API key. They use local test data
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The test suite covers retrieval, knowledge-base integrity, abstention, emergency phrase handling, citation filtering, the API endpoint, and the Gemini structured-output schema.
+The test suite covers retrieval, knowledge-base integrity, abstention, emergency phrase handling, citation filtering, the API endpoint, and the Gemini structured-output schema. GitHub Actions runs the same suite automatically on pushes and pull requests for Python 3.11, 3.12, and 3.13. The first CI run for this repository completed successfully on all three versions.
 
 ## Optional: run the HTTP API
 
@@ -223,7 +223,9 @@ RAG-CLI/
 ├── data/
 │   ├── northside_dental_knowledge_base.json
 │   └── northside_dental_knowledge_base_section_index.md
-├── tests/                  # Offline automated tests
+├── tests/                  # Offline automated tests, including schema regression coverage
+├── .github/workflows/
+│   └── tests.yml           # CI tests on Python 3.11, 3.12 and 3.13
 ├── .env.example            # Safe configuration template (no real key)
 ├── .gitignore              # Excludes .env and local environment files
 ├── requirements.txt
