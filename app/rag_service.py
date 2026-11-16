@@ -15,7 +15,6 @@ EMERGENCY_PATTERNS = [
     re.compile(r"\b(severe|serious)\s+facial\s+(trauma|injury)\b", re.I),
     re.compile(r"\b(loss of consciousness|lost consciousness|unconscious|passed out|altered awareness|fainted)\b", re.I),
 ]
-CONFIDENCE_BASIS = "Retrieval-based relevance heuristic (BM25-normalized score); not a calibrated probability."
 ABSTENTION = "The fictional Northside Dental Clinic demo knowledge base does not contain enough information to answer that. Please confirm with the front desk."
 
 
@@ -66,7 +65,6 @@ class RAGService:
                         "This is a fictional demo and does not determine the cause of symptoms."),
                 sources=sources,
                 confidence_score=1.0 if emergency else 0.0,
-                confidence_basis="Deterministic emergency phrase rule matched the handbook's emergency category; not a calibrated probability.",
                 answerable=True,
             )
 
@@ -77,7 +75,6 @@ class RAGService:
                 answer=ABSTENTION,
                 sources=[],
                 confidence_score=0.0,
-                confidence_basis=CONFIDENCE_BASIS,
                 answerable=False,
             )
         if self.generator is None:
@@ -93,7 +90,6 @@ class RAGService:
                 answer=ABSTENTION,
                 sources=[],
                 confidence_score=0.0,
-                confidence_basis=CONFIDENCE_BASIS,
                 answerable=False,
             )
 
@@ -103,7 +99,6 @@ class RAGService:
             answer=draft.answer,
             sources=[_citation(item) for item in valid_cited],
             confidence_score=round(confidence, 4),
-            confidence_basis=CONFIDENCE_BASIS,
             answerable=True,
         )
 
